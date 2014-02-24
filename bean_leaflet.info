@@ -1,0 +1,6 @@
+name = Bean Leaflet
+description = Provide a filterable leaflet bean with a GeoJSON backend
+dependencies[] = bean
+dependencies[] = leaflet
+package = custom
+core = 7.x

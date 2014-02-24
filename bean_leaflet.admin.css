@@ -1,0 +1,10 @@
+#edit-filters .leaflet-filter-config {
+  clear: both;
+}
+#edit-filters .leaflet-filter-config .form-item {
+  float: left;
+  margin-right: 1em;
+}
+#edit-filters .leaflet-filter-config .form-type-checkbox {
+  margin-top: 1.5em;
+}

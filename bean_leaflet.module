@@ -1,0 +1,167 @@
+<?php
+
+/**
+ * @file bean_leaflet.module
+ * TODO: Enter file description here.
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function bean_leaflet_menu() {
+  $items['geojson/%'] = array(
+    'page callback' => 'bean_leaflet_get_geojson',
+    'page arguments' => array(1),
+    'access callback' => 'user_access',
+    'access arguments' => array('access content'),
+    'delivery callback' => 'drupal_json_output',
+  );
+  return $items;
+}
+
+/**
+ * Implements hook_bean_types_api_info().
+ */
+function bean_leaflet_bean_types_api_info() {
+  return array(
+    'api' => 5,
+  );
+}
+
+/**
+ * Implements hook_bean_types().
+ */
+function bean_leaflet_bean_types() {
+  $plugins = array();
+  $plugin_path = drupal_get_path('module', 'bean_leaflet') . '/plugins/bean';
+  $plugins['leaflet_quick'] = array(
+    'label' => t('Leaflet'),
+    'description' => t('Display an optimized leaflet map'),
+    'abstract' => FALSE,
+    'handler' => array(
+      'class' => 'LeafletBean',
+      'parent' => 'bean',
+      'path' => $plugin_path,
+    ),
+    'path' => $plugin_path,
+  );
+  return $plugins;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function bean_leaflet_theme() {
+  return array(
+    'bean_leaflet_filter' => array(
+      'file' => 'theme.inc',
+      'render element' => 'element',
+    ),
+    'bean_leaflet_filter_single' => array(
+      'file' => 'theme.inc',
+      'variables' => array(
+        'name' => '',
+        'title' => '',
+        'options' => array(),
+      ),
+    ),
+  );
+}
+
+/**
+ * Implements hook_library().
+ */
+function bean_leaflet_library() {
+  $module_path = drupal_get_path('module', 'bean_leaflet');
+  $libraries['leaflet'] = array(
+    'title' => 'Bean leaflet',
+    'website' => 'https://github.com/generoi',
+    'version' => '0.1',
+    'js' => array(
+      $module_path . '/bean_leaflet.js' => array(),
+    ),
+  );
+  return $libraries;
+}
+
+/**
+ * Return the leaflet features as a GeoJSON array.
+ */
+function bean_leaflet_get_geojson($bean) {
+  $result = _bean_leaflet_get_records($bean);
+  $features = array();
+  foreach ($result as $record) {
+    $feature = array(
+      'type' => 'Feature',
+      'geometry' => array(
+        'type' => 'Point',
+        'coordinates' => array($record->lon, $record->lat),
+      ),
+      'properties' => array(
+        'popup' => $record->title
+      ),
+    );
+    $features[] = $feature;
+  }
+
+  $output = array(
+    'type' => 'FeatureCollection',
+    'features' => $features,
+  );
+  return $output;
+}
+
+/**
+ * Return the leaflet features such as they are accetable for building the map.
+ */
+function bean_leaflet_get_points($bean) {
+  $result = _bean_leaflet_get_records($bean);
+  $features = array();
+  foreach ($result as $record) {
+    $feature = array(
+      'type' => 'point',
+      'lat' => $record->lat,
+      'lon' => $record->lon,
+      'popup' => $record->title,
+    );
+    $features[] = $feature;
+  }
+
+  return $features;
+}
+
+/**
+ * Return the filtered records of specified bean/bean-id.
+ */
+function _bean_leaflet_get_records($bean) {
+  global $language;
+  if (!is_object($bean)) {
+    $bean = bean_load($bean);
+  }
+  $settings = $bean->settings;
+  $filters = $bean->filters;
+
+  $query = db_select('node', 'n')
+    ->condition('n.status', 1)
+    ->condition('n.type', $settings['content_type'])
+    ->condition('n.language', $language->language);
+
+  foreach ($filters as $filter) {
+    $field = $filter['term_field'];
+    if ($field == '<none>') {
+      continue;
+    }
+    if (isset($_GET[$field]) && is_numeric($_GET[$field])) {
+      $query->join("field_data_{$field}", $field, "n.nid = {$field}.entity_id");
+      $query->condition("{$field}.{$field}_tid", $_GET[$field]);
+    }
+  }
+
+  $geofield = $settings['geofield'];
+  $query->join("field_data_{$geofield}", 'geo', 'n.nid = geo.entity_id');
+  $query->fields('n', array('nid', 'title'));
+  $query->addField('geo', "{$geofield}_lat", 'lat');
+  $query->addField('geo', "{$geofield}_lon", 'lon');
+
+  return $query->execute();
+}
