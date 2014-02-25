@@ -34,7 +34,7 @@
     this.$el = $el;
     this.settings = settings;
     // Hack, but leaflet module should really expose this.
-    this.$map = $el.children().eq(0);
+    this.$map = $el.find('.leaflet-map > div');
     this.mapId = this.$map.prop('id');
     this.$filter = $el.find('.leaflet-filters');
     // Used for populating the query parameters to the geojson request.

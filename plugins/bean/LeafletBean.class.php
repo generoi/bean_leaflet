@@ -388,16 +388,24 @@ class LeafletBean extends BeanPlugin {
       'type' => 'setting',
     );
 
-    $content['leaflet'] = array(
+    $build['leaflet_map'] = array(
+      '#type' => 'container',
+      '#attributes' => array('class' => array('leaflet-map')),
+      'map' => array(
+        '#markup' => leaflet_render_map($map, $features, $height . 'px'),
+      ),
+    );
+    $build['leaflet_filters'] = array(
+      '#theme' => 'bean_leaflet_filter',
+    ) + $filters;
+
+    $key = key($content['bean']);
+
+    $content['bean'][$key] += $build;
+    $content['bean'] += array(
       '#type' => 'container',
       '#attributes' => array('id' => 'bean-leaflet-' . $entity_id),
     );
-    $content['leaflet']['map'] = array(
-      '#markup' => leaflet_render_map($map, $features, $height . 'px'),
-    );
-    $content['leaflet']['filters'] = array(
-      '#theme' => 'bean_leaflet_filter',
-    ) + $filters;
     return $content;
   }
 

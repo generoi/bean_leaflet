@@ -165,3 +165,24 @@ function _bean_leaflet_get_records($bean) {
 
   return $query->execute();
 }
+
+/**
+ * Implements hook_flet_field_extra_fields().
+ */
+function bean_leaflet_field_extra_fields() {
+  $extra['bean']['leaflet_quick'] = array(
+    'display' => array(
+      'leaflet_map' => array(
+        'label' => t('Leaflet Map'),
+        'description' => t('Leaflet Map'),
+        'weight' => 0,
+      ),
+      'leaflet_filters' => array(
+        'label' => t('Leaflet Filters'),
+        'description' => t('Leaflet Filters'),
+        'weight' => 0,
+      ),
+    ),
+  );
+  return $extra;
+}
