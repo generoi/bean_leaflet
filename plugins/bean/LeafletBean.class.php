@@ -247,6 +247,14 @@ class LeafletBean extends BeanPlugin {
         '#default_value' => $bean->settings['map_settings']['spiderifyOnMaxZoom'],
       );
     }
+    $form['settings']['map_settings']['zoomControl'] = $checkbox_base + array(
+      '#title' => t('Display zoom controls'),
+      '#default_value' => $bean->settings['map_settings']['zoomControl'],
+    );
+    $form['settings']['map_settings']['attributionControl'] = $checkbox_base + array(
+      '#title' => t('Display attribution controls'),
+      '#default_value' => $bean->settings['map_settings']['attributionControl'],
+    );
 
 
     $form['filters'] = array(
