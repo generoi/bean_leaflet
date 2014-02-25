@@ -49,6 +49,8 @@
       , value = $this.data('filter-value')
       , filter = $this.parents('[data-filter-name]').data('filter-name');
 
+    $this.addClass('throbber');
+
     this.filters[filter] = value;
     e.preventDefault();
     this.fetchGeoJSON();
@@ -69,6 +71,7 @@
       var geojsonLayer = new L.GeoJSON(data, Drupal.beanLeaflet.geojsonOptions);
       that.layerCache[query] = geojsonLayer;
       that.rebuildMap(geojsonLayer);
+      $('.leaflet-filter-links a').removeClass('throbber');
     });
   };
 
