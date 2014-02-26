@@ -61,9 +61,14 @@
       , url = this.settings.geojson + '?' + query
       , that = this;
 
+    function cancelThrobber() {
+      $('.leaflet-filter-links a').removeClass('throbber');
+    }
+
     // If we've already fetched this layer, dont request it again.
     if (this.layerCache[query]) {
       this.rebuildMap(this.layerCache[query]);
+      cancelThrobber();
       return;
     }
 
@@ -71,7 +76,7 @@
       var geojsonLayer = new L.GeoJSON(data, Drupal.beanLeaflet.geojsonOptions);
       that.layerCache[query] = geojsonLayer;
       that.rebuildMap(geojsonLayer);
-      $('.leaflet-filter-links a').removeClass('throbber');
+      cancelThrobber();
     });
   };
 
