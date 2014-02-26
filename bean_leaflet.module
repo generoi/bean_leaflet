@@ -143,8 +143,7 @@ function _bean_leaflet_get_records($bean) {
 
   $query = db_select('node', 'n')
     ->condition('n.status', 1)
-    ->condition('n.type', $settings['content_type'])
-    ->condition('n.language', $language->language);
+    ->condition('n.type', $settings['content_type']);
 
   foreach ($filters as $filter) {
     $field = $filter['term_field'];

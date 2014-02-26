@@ -362,6 +362,7 @@ class LeafletBean extends BeanPlugin {
       $map['center'] = array('lat' => 51.505, 'lon' => -0.09);
     }
 
+    global $language;
     $filters = array();
     foreach ($bean->filters as $filter) {
       if ($filter['term_field'] == '<none>') {
@@ -369,8 +370,16 @@ class LeafletBean extends BeanPlugin {
       }
       $field_info = field_info_field($filter['term_field']);
       $vocabulary_name = $field_info['settings']['allowed_values'][0]['vocabulary'];
-      $vocabulary = taxonomy_vocabulary_machine_name_load($vocabulary_name);
-      $terms = module_exists('i18n_taxonomy') ? i18n_taxonomy_get_tree($vocabulary->vid, i18n_langcode()) : taxonomy_get_tree($vocabulary->vid);
+      $query = new EntityFieldQuery();
+      $tids = $query
+        ->entityCondition('entity_type', 'taxonomy_term')
+        ->entityCondition('bundle', $vocabulary_name)
+        ->propertyCondition('language', array($language->language, LANGUAGE_NONE), 'IN')
+        ->execute();
+
+      $tids = array_keys($tids['taxonomy_term']);
+
+      $terms = taxonomy_term_load_multiple($tids);
       $options = array();
       foreach ($terms as $term) {
         $options[$term->tid] = $term->name;
