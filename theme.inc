@@ -35,7 +35,7 @@ function theme_bean_leaflet_filter_single($variables) {
   $element = array(
     'links' => $links,
     'attributes' => array(
-      'class' => array('margin-top', 'leaflet-filter-links', 'no-bullet', 'inline-list'),
+      'class' => array('margin-top', 'leaflet-filter-links', 'no-bullet', 'inline-list', 'no-margin-bottom'),
       'data-filter-name' => $name,
     ),
   );
