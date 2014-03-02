@@ -41,6 +41,9 @@
     this.filters = {};
     this.layerCache = {};
 
+    // Remove the href attributes as doubletapping on windows phone still
+    // goes to them even though they do not necessarily exist.
+    this.$filter.find('.leaflet-filter-links a').prop('href', '#');
     this.$filter.on('click', '.leaflet-filter-links a', $.proxy(this.triggerFilter, this));
   }
 
