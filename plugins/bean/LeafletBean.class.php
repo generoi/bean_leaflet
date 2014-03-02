@@ -382,7 +382,7 @@ class LeafletBean extends BeanPlugin {
       $terms = taxonomy_term_load_multiple($tids);
       $options = array();
       foreach ($terms as $term) {
-        $options[$term->tid] = $term->name;
+        $options[$term->tid] = entity_label('taxonomy_term', $term);
       }
 
       $filters[] = array(
